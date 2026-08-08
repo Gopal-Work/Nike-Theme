@@ -1,11 +1,10 @@
 # =========================================================================
-# WordPress .gitignore Template
+# WordPress .gitignore Template (Configured for Nike-Theme)
 # =========================================================================
 
 # -------------------------------------------------------------------------
 # Core Files
-# Ignore WordPress core files. You usually manage these via WP-CLI, Bedrock, 
-# or standard deployment tools rather than tracking them in Git.
+# Ignore WordPress core files in the root directory.
 # -------------------------------------------------------------------------
 /*
 !.gitignore
@@ -35,25 +34,17 @@ wp-config-local.php
 !.env.example
 
 # -------------------------------------------------------------------------
-# Plugins & Themes Rules
-# Choose your workflow approach below (Default: track custom, ignore 3rd party).
+# Plugins & Themes
+# Ignore all third-party plugins and themes except your Nike-Theme.
 # -------------------------------------------------------------------------
-
-# Option A (Recommended): Ignore third-party plugins/themes, track custom ones.
-# Step 1: Ignore everything in plugins and themes
 wp-content/plugins/*
 wp-content/themes/*
 
-# Step 2: Un-ignore your custom plugins and themes here
-!wp-content/plugins/my-custom-plugin/
-!wp-content/themes/my-custom-theme/
-
-# (Alternative Option B): Track ALL plugins and themes except core defaults.
-# To use Option B, comment out Option A above and uncomment the lines below:
-# wp-content/themes/twenty*
+# EXCEPTION: Un-ignore your custom theme folder
+!wp-content/themes/Nike-Theme/
 
 # -------------------------------------------------------------------------
-# Web Server & System Files
+# Server, System & Editor Files
 # -------------------------------------------------------------------------
 .htaccess
 web.config
@@ -84,7 +75,7 @@ Thumbs.db
 *.sql
 *.sqlite
 
-# Node & Build Tooling (if building custom themes/plugins with NPM/Composer)
+# Build Tooling (if using NPM/Composer inside your theme)
 node_modules/
 vendor/
 npm-debug.log
