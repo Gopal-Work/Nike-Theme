@@ -1,1 +1,247 @@
-/* custom style start */
+/* nike theme custom css starts */
+
+
+/* Scoped strictly to homepage_banner so it never leaks into other sections */
+.homepage_banner {
+  position: relative;
+}
+
+.homepage_banner .e-con-inner {
+  position: relative;
+  min-height: 1px; /* keeps container from collapsing once children are display:none */
+}
+
+/* Hide all slides by default, show only the active one */
+.homepage_banner .e-con-inner > div {
+  display: none;
+}
+
+.homepage_banner .e-con-inner > div.hb-active {
+  display: block;
+  animation: hbFade 0.6s ease;
+}
+
+@keyframes hbFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Controls bar */
+.homepage_banner .hb-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 20;
+}
+
+.homepage_banner .hb-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+}
+
+.homepage_banner .hb-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.homepage_banner .hb-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 6px;
+}
+
+.homepage_banner .hb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.homepage_banner .hb-dot.hb-active-dot {
+  background: #fff;
+  width: 22px;
+  border-radius: 4px;
+}
+
+/* Progress ring around the play/pause button */
+.homepage_banner .hb-play-wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.homepage_banner .hb-progress-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg); /* start the fill from 12 o'clock */
+  pointer-events: none;
+}
+
+.homepage_banner .hb-progress-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 2;
+}
+
+.homepage_banner .hb-progress-bar {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Play/pause button sits centered inside the ring, no separate circle bg */
+.homepage_banner .hb-play-wrap .hb-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+}
+
+.homepage_banner .hb-play-wrap .hb-btn:hover {
+  background: transparent;
+}
+
+
+
+/* Container & GPU Hardware Acceleration */
+.category-slider-wrapper {
+    position: relative;
+    margin: 20px 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 
+ * Smooth Synchronized Padding Transitions
+ * Matching the JS speed (450ms) and bezier curve ensures no layout stutter
+ */
+.category-slider-wrapper .slick-list {
+    margin: 0 -8px;
+    padding: 0 80px 0 0;
+    transition: padding 450ms cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: padding;
+}
+
+.category-slider-wrapper .slick-list.has-scrolled {
+    padding: 0 80px;
+}
+
+.category-slider-wrapper .slick-list.has-scrolled.is-at-end {
+    padding: 0 0 0 80px !important;
+}
+
+/* Hardware-accelerate the moving track */
+.category-slider-wrapper .slick-track {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Slide Card Elements */
+.category-slider-wrapper .catrory-slider {
+    padding: 0 8px;
+    outline: none;
+}
+
+.category-slider-wrapper .catrory-slider a {
+    text-decoration: none;
+    color: #111;
+    display: block;
+}
+
+.category-slider-wrapper .category-slider-image {
+    position: relative;
+    width: 100%;
+    padding-top: 125%; /* 4:5 aspect ratio */
+    overflow: hidden;
+    background-color: #f5f5f5;
+    transform: translateZ(0); /* Force GPU layer */
+}
+
+.category-slider-wrapper .category-slider-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.category-slider-wrapper .catrory-slider:hover .category-slider-image img {
+    transform: scale(1.03);
+}
+
+/* Typography */
+.category-slider-wrapper .catrory-slider-title {
+    margin-top: 12px;
+}
+
+.category-slider-wrapper .catrory-slider-title span {
+    font-size: 18px;
+    font-weight: 600;
+    font-family: Helvetica, Arial, sans-serif;
+    color: #111;
+    display: inline-block;
+}
+
+/* Smooth Circular Navigation Buttons */
+.category-slider-wrapper .custom-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    color: #111;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+}
+
+.category-slider-wrapper .custom-arrow:hover {
+    background: #e5e5e5;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.category-slider-wrapper .slick-prev {
+    left: 20px;
+}
+
+.category-slider-wrapper .slick-next {
+    right: 20px;
+}
+
+.category-slider-wrapper .slick-disabled {
+    opacity: 0;
+    pointer-events: none;
+}
