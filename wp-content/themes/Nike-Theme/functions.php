@@ -142,6 +142,9 @@ function learn_scripts() {
     wp_enqueue_style( 'learn-style', get_stylesheet_uri(), array(), _S_VERSION );
     wp_style_add_data( 'learn-style', 'rtl', 'replace' );
 
+    // bootstrap css
+    wp_enqueue_style( 'bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3' );
+
     // 2. Slick Carousel CSS (REQUIRED FOR SLIDER TO WORK)
     wp_enqueue_style( 'slick-css', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css', array(), '1.8.1' );
     wp_enqueue_style( 'slick-theme-css', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css', array('slick-css'), '1.8.1' );
@@ -150,7 +153,7 @@ function learn_scripts() {
     $css_path = get_stylesheet_directory() . '/css/custom.css';
     $css_ver  = file_exists( $css_path ) ? filemtime( $css_path ) : _S_VERSION;
     wp_enqueue_style( 'custom-style', get_stylesheet_directory_uri() . '/css/custom.css', array('slick-css'), $css_ver );
-
+    
     // 4. Navigation Script
     wp_enqueue_script( 'learn-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
@@ -158,6 +161,9 @@ function learn_scripts() {
     if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
         wp_enqueue_script( 'comment-reply' );
     }
+
+    // bootstrap js
+    wp_enqueue_script( 'bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array( 'jquery' ), '5.3.3', true );
 
     // 6. Slick Carousel JS
     wp_enqueue_script( 'slick-js', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js', array( 'jquery' ), '1.8.1', true );
@@ -245,9 +251,9 @@ function render_trending_categories_shortcode( $atts ) {
     }
 
     if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) : ?>
-        <div class="our_trending_category">
+        <div class="our_trending_category py-4">
             <div class="container">
-                <div class="title"><h2>Trending</h2></div>
+                <div class="title pb-3"><h2>Trending</h2></div>
                 <div class="card_main">
                     <div class="inner">
                         <?php foreach ( $categories as $category ) : 
@@ -264,17 +270,17 @@ function render_trending_categories_shortcode( $atts ) {
                                 $image_url = $atts['fallback_image'];
                             }
                         ?>
-                            <div class="card">
-                                <a href="<?php echo esc_url( $cat_link ); ?>" style="background-image: url('<?php echo esc_url( $image_url ); ?>');">
+                            <div class="card d-flex align-items-center justify-content-center border-0">
+                                <a class="w-100" href="<?php echo esc_url( $cat_link ); ?>" style="background-image: url('<?php echo esc_url( $image_url ); ?>');">
 									<div class="card-info">
-									<!-- Category Name -->
-                                    <p><?php echo esc_html( $cat_name ); ?></p>
-                                    
-                                    <!-- Sub Text / Description -->
-                                    <h3><?php echo esc_html( $sub_title ); ?></h3>
-                                    
-                                    <!-- Dynamic Shortcode Attribute Text -->
-                                    <span><?php echo esc_html( $atts['button_text'] ); ?></span>
+                                        <!-- Category Name -->
+                                        <p class="text-white"><?php echo esc_html( $cat_name ); ?></p>
+                                        
+                                        <!-- Sub Text / Description -->
+                                        <h3 class="text-white"><?php echo esc_html( $sub_title ); ?></h3>
+                                        
+                                        <!-- Dynamic Shortcode Attribute Text -->
+                                        <span class="primary_btn px-2 py-1"><?php echo esc_html( $atts['button_text'] ); ?></span>
 									</div>
                                 </a>
                             </div>

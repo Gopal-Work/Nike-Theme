@@ -243,3 +243,39 @@ jQuery(document).ready(function($) {
 });
 
 // category slider js 
+
+
+// our_trending_category section 
+
+jQuery(document).ready(function($) {
+  function runslick(){
+    var width=window.innerWidth;
+    if(width<767){
+     $('.our_trending_category .inner').slick({
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          arrows: false,
+          dots: true,
+          responsive: [
+            {
+              breakpoint: 767,
+              settings: {
+                  slidesToShow: 1,
+              }
+            }
+          ]
+        });
+    }else{
+      if($('.our_trending_category .inner').hasClass('slick-initialized')){
+        $('.our_trending_category .inner').slick('unslick');
+      }
+      // $('.our_trending_category .inner').slick('unslick');
+    }
+     
+  }
+  var width=window.innerWidth;
+  window.addEventListener("resize", () => {
+    runslick();
+  });
+  runslick();
+});
