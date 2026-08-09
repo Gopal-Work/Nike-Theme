@@ -325,6 +325,6 @@ footer nav ul li a {
 /* Styles apply to screens 480px wide or smaller */
 @media screen and (max-width: 480px) {
 .homepage_banner video {
-    height: 360px !important;
+    height: 350px !important;
 }
 }
