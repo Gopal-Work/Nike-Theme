@@ -1,6 +1,21 @@
 /* nike theme custom css starts */
 
+/* globals */
+.container{
+    max-width:1168px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+.primary_btn{
+  border: 1px solid transparent;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+}
 
+/* globals end */
+
+/* homepage banner section */
 /* Scoped strictly to homepage_banner so it never leaks into other sections */
 .homepage_banner {
   position: relative;
@@ -59,10 +74,7 @@
 }
 
 .homepage_banner .hb-dots {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 6px;
+  display: none !important; /* hide default slick dots */
 }
 
 .homepage_banner .hb-dot {
@@ -124,7 +136,7 @@
 }
 
 
-
+/* category slider section */
 /* Container & GPU Hardware Acceleration */
 .category-slider-wrapper {
     position: relative;
@@ -244,4 +256,75 @@
 .category-slider-wrapper .slick-disabled {
     opacity: 0;
     pointer-events: none;
+}
+
+.category-slider-wrapper button.custom-arrow:before{
+    content: unset;
+}
+.category-slider-wrapper button.custom-arrow {
+    padding:0 !important;
+    height:56px !important;
+    width:56px !important;
+}
+
+/* trending category section */
+.our_trending_category .inner {
+    display:flex;
+    margin: 0 -10px;
+}
+.our_trending_category .card {
+    width:calc(33.33% - 20px);
+    margin: 0 10px;
+}
+.our_trending_category h3 {
+  font-size: 20px;
+}
+.our_trending_category a {
+    display:inline-block;
+    padding: 250px 20px 20px 20px;
+    background-size: cover;
+    background-position: center;
+}
+
+
+/* footer css */
+footer p {
+    margin-bottom:0px !important;
+}
+footer nav ul li a {
+    padding:0 20px 0 0 !important;
+}
+
+
+/* media querry starts here */
+
+/* Styles apply to screens 1024px wide or smaller */
+@media screen and (max-width: 1024px) {
+  footer nav ul{
+    flex-direction: column;
+  }
+}
+
+/* Styles apply to screens 768px wide or smaller */
+@media screen and (max-width: 768px) {
+ .our_trending_category h3 {
+  font-size: 18px;
+}
+.our_trending_category a {
+    padding: 250px 10px 10px 10px;
+}
+.homepage_banner video {
+    height: 600px !important;
+}
+.homepage_banner .hb-btn,.homepage_banner .hb-play-wrap{
+  transform: scale(0.7);
+}
+}
+
+
+/* Styles apply to screens 480px wide or smaller */
+@media screen and (max-width: 480px) {
+.homepage_banner video {
+    height: 350px !important;
+}
 }
