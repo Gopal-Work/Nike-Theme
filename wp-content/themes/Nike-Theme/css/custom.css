@@ -43,14 +43,14 @@
 
 /* Controls bar */
 .homepage_banner .hb-controls {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 20;
+    position: absolute;
+    bottom: 24px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 20;
+    right: -50px;
 }
 
 .homepage_banner .hb-btn {
@@ -72,23 +72,28 @@
 .homepage_banner .hb-btn:hover {
   background: rgba(0, 0, 0, 0.75);
 }
-
 .homepage_banner .hb-dots {
-  display: none !important; /* hide default slick dots */
+    position: absolute;
+    bottom: 35px;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    gap: 20px;
 }
 
 .homepage_banner .hb-dot {
-  width: 8px;
-  height: 8px;
+  width: 8px !important;
+  height: 8px !important;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   transition: all 0.25s ease;
+  display: inline-block;
 }
 
 .homepage_banner .hb-dot.hb-active-dot {
   background: #fff;
-  width: 22px;
+  /* width: 22px !important; */
   border-radius: 4px;
 }
 
@@ -281,9 +286,10 @@
 }
 .our_trending_category a {
     display:inline-block;
-    padding: 250px 20px 20px 20px;
-    background-size: cover;
+    padding: 400px 20px 20px 20px;
+    /* background-size: cover; */
     background-position: center;
+    background-repeat: no-repeat;
 }
 
 
@@ -319,6 +325,18 @@ footer nav ul li a {
 .homepage_banner .hb-btn,.homepage_banner .hb-play-wrap{
   transform: scale(0.7);
 }
+
+.homepage_banner .hb-controls {
+    position: absolute;
+    bottom: 24px;
+    left: -50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 20;
+}
+
 }
 
 
