@@ -407,7 +407,6 @@ add_shortcode('say_hello','say_hello_function');
 
 // Ajax code start
 
-
 /**
  * ============================================
  * STEP 1: SHORTCODE - Yeh HTML output karta hai
@@ -422,7 +421,6 @@ function custom_load_more_shortcode( $atts ) {
         'post_type'      => 'post',
     ), $atts, 'load_more_posts' );
 
-    // Unique ID - agar same shortcode ek page pe 2 baar use ho to conflict na ho
     $unique_id = 'lm_' . wp_rand( 1000, 9999 );
 
     $query_args = array(
@@ -458,7 +456,6 @@ function custom_load_more_shortcode( $atts ) {
                 data-posts-per-page="<?php echo esc_attr( $atts['posts_per_page'] ); ?>"
                 data-category="<?php echo esc_attr( $atts['category'] ); ?>"
                 data-post-type="<?php echo esc_attr( $atts['post_type'] ); ?>"
-                data-nonce="<?php echo esc_attr( wp_create_nonce( 'lm_nonce_action' ) ); ?>"
             >
                 <?php echo esc_html( $atts['button_text'] ); ?>
             </button>
@@ -485,13 +482,14 @@ function custom_load_more_enqueue_scripts() {
         true
     );
 
-    // JS file ko PHP se data pass karna (ajaxurl frontend pe available nahi hota)
+    // JS file ko PHP se data pass karna (ajax_url aur nonce ek hi jagah se)
     wp_localize_script( 'custom-load-more-js', 'lm_ajax_obj', array(
         'ajax_url' => admin_url( 'admin-ajax.php' ),
+        'nonce'    => wp_create_nonce( 'lm_nonce_action' ),
     ) );
 }
 add_action( 'wp_enqueue_scripts', 'custom_load_more_enqueue_scripts' );
-// fir to is js file me sirf isi shortcode realte js likh payenge
+
 
 /**
  * ======================================================
@@ -500,13 +498,13 @@ add_action( 'wp_enqueue_scripts', 'custom_load_more_enqueue_scripts' );
  */
 function custom_load_more_ajax_handler() {
 
-    // Security check - nonce verify
+    // Security check - nonce verify (JS se $_POST['nonce'] me aayega)
     check_ajax_referer( 'lm_nonce_action', 'nonce' );
 
-    $page            = isset( $_POST['page'] ) ? (int) $_POST['page'] : 1;
-    $posts_per_page  = isset( $_POST['posts_per_page'] ) ? (int) $_POST['posts_per_page'] : 3;
-    $category        = isset( $_POST['category'] ) ? sanitize_text_field( $_POST['category'] ) : '';
-    $post_type       = isset( $_POST['post_type'] ) ? sanitize_text_field( $_POST['post_type'] ) : 'post';
+    $page           = isset( $_POST['page'] ) ? (int) $_POST['page'] : 1;
+    $posts_per_page = isset( $_POST['posts_per_page'] ) ? (int) $_POST['posts_per_page'] : 3;
+    $category       = isset( $_POST['category'] ) ? sanitize_text_field( $_POST['category'] ) : '';
+    $post_type      = isset( $_POST['post_type'] ) ? sanitize_text_field( $_POST['post_type'] ) : 'post';
 
     $next_page = $page + 1;
 
@@ -538,12 +536,11 @@ function custom_load_more_ajax_handler() {
     $html = ob_get_clean();
 
     wp_send_json_success( array(
-        'html'        => $html,
-        'next_page'   => $next_page,
-        'max_pages'   => $query->max_num_pages,
+        'html'      => $html,
+        'next_page' => $next_page,
+        'max_pages' => $query->max_num_pages,
     ) );
 }
-// logged-in aur logged-out dono users ke liye hook
 add_action( 'wp_ajax_load_more_posts_action', 'custom_load_more_ajax_handler' );
 add_action( 'wp_ajax_nopriv_load_more_posts_action', 'custom_load_more_ajax_handler' );
 
