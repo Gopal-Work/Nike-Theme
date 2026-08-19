@@ -853,4 +853,4 @@ function custom_side_mini_cart_fragment_count( $fragments ) {
     return $fragments;
 }
 
-// ajax checkhout end
+// ajax checkhout ended
