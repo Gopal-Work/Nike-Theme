@@ -632,3 +632,225 @@ function save_custom_registration_fields( $customer_id ) {
         update_user_meta( $customer_id, 'customer_dob', sanitize_text_field( $_POST['customer_dob'] ) );
     }
 }
+
+
+// ajax checkhout start
+
+// 1. Mini Cart Shortcode Register Karein
+add_shortcode( 'custom_side_mini_cart', 'render_custom_side_mini_cart' );
+
+function render_custom_side_mini_cart() {
+    ob_start();
+    
+    if ( class_exists( 'WC_Cart' ) ) {
+        $cart_count = WC()->cart->get_cart_contents_count();
+        ?>
+        <!-- Mini Cart Wrapper -->
+        <div class="custom_side_mini_cart-wrapper">
+            <a href="#" class="custom_side_mini_cart-toggle-btn">
+                <span class="custom_side_mini_cart-icon">🛒 Cart</span>
+                <span class="custom_side_mini_cart-count-badge"><?php echo esc_html( $cart_count ); ?></span>
+            </a>
+
+            <!-- Overlay -->
+            <div class="custom_side_mini_cart-overlay"></div>
+
+            <!-- Slide-in Sidebar Panel -->
+            <div class="custom_side_mini_cart-sidebar">
+                <div class="custom_side_mini_cart-header">
+                    <h3>Your Cart</h3>
+                    <button class="custom_side_mini_cart-close-btn">&times;</button>
+                </div>
+                
+                <div class="custom_side_mini_cart-content widget_shopping_cart_content">
+                    <?php custom_side_mini_cart_render_contents(); ?>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .custom_side_mini_cart-wrapper { position: relative; display: inline-block; }
+            .custom_side_mini_cart-toggle-btn { background: #000; color: #fff; padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 8px; border-radius: 4px; cursor: pointer; }
+            .custom_side_mini_cart-count-badge { background: #ff4757; color: #fff; padding: 2px 6px; border-radius: 50%; font-size: 12px; }
+
+            .custom_side_mini_cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); visibility: hidden; opacity: 0; transition: opacity 0.3s ease; z-index: 9998; }
+            .custom_side_mini_cart-overlay.custom_side_mini_cart-active { visibility: visible; opacity: 1; }
+
+            .custom_side_mini_cart-sidebar { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: #fff; box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; z-index: 9999; display: flex; flex-direction: column; }
+            .custom_side_mini_cart-sidebar.custom_side_mini_cart-active { right: 0; }
+
+            .custom_side_mini_cart-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+            .custom_side_mini_cart-header h3 { margin: 0; font-size: 18px; }
+            .custom_side_mini_cart-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; }
+            .custom_side_mini_cart-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
+
+            /* Cart Items List styling */
+            .custom_side_mini_cart-items-list { list-style: none; padding: 0; margin: 0; }
+            .custom_side_mini_cart-item { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid #f1f1f1; padding-bottom: 15px; }
+            .custom_side_mini_cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+            .custom_side_mini_cart-item-details { flex-grow: 1; }
+            .custom_side_mini_cart-item-details h4 { font-size: 14px; margin: 0 0 5px 0; }
+            
+            /* Quantity Stepper UI */
+            .custom_side_mini_cart-qty-box { display: inline-flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+            .custom_side_mini_cart-qty-btn { background: #f8f9fa; border: none; padding: 2px 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
+            .custom_side_mini_cart-qty-btn:hover { background: #e9ecef; }
+            .custom_side_mini_cart-qty-input { width: 35px; text-align: center; border: none; font-size: 13px; -moz-appearance: textfield; }
+            .custom_side_mini_cart-qty-input::-webkit-outer-spin-button,
+            .custom_side_mini_cart-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+            .custom_side_mini_cart-footer { border-top: 1px solid #eee; padding-top: 15px; margin-top: auto; }
+            .custom_side_mini_cart-total { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; }
+            .custom_side_mini_cart-buttons { display: flex; gap: 10px; }
+            .custom_side_mini_cart-buttons a { flex: 1; text-align: center; padding: 10px; background: #000; color: #fff; border-radius: 4px; text-decoration: none; font-size: 14px; }
+            .custom_side_mini_cart-buttons a.checkout { background: #28a745; }
+        </style>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const toggleBtn = document.querySelector(".custom_side_mini_cart-toggle-btn");
+                const sidebar = document.querySelector(".custom_side_mini_cart-sidebar");
+                const overlay = document.querySelector(".custom_side_mini_cart-overlay");
+                const closeBtn = document.querySelector(".custom_side_mini_cart-close-btn");
+
+                function openCart(e) {
+                    if(e) e.preventDefault();
+                    sidebar.classList.add("custom_side_mini_cart-active");
+                    overlay.classList.add("custom_side_mini_cart-active");
+                }
+
+                function closeCart() {
+                    sidebar.classList.remove("custom_side_mini_cart-active");
+                    overlay.classList.remove("custom_side_mini_cart-active");
+                }
+
+                if(toggleBtn) toggleBtn.addEventListener("click", openCart);
+                if(closeBtn) closeBtn.addEventListener("click", closeCart);
+                if(overlay) overlay.addEventListener("click", closeCart);
+
+                // AJAX Quantity Update via + / - buttons
+                document.body.addEventListener("click", function(e) {
+                    if (e.target.classList.contains("custom_side_mini_cart-qty-btn")) {
+                        e.preventDefault();
+                        let btn = e.target;
+                        let wrapper = btn.closest(".custom_side_mini_cart-qty-box");
+                        let input = wrapper.querySelector(".custom_side_mini_cart-qty-input");
+                        let cartItemKey = wrapper.getAttribute("data-key");
+                        let currentVal = parseInt(input.value);
+                        let newVal = currentVal;
+
+                        if (btn.classList.contains("plus")) {
+                            newVal = currentVal + 1;
+                        } else if (btn.classList.contains("minus") && currentVal > 1) {
+                            newVal = currentVal - 1;
+                        } else if (btn.classList.contains("minus") && currentVal === 1) {
+                            newVal = 0; 
+                        }
+
+                        input.value = newVal;
+
+                        let formData = new FormData();
+                        formData.append("action", "custom_side_mini_cart_update_qty");
+                        formData.append("cart_item_key", cartItemKey);
+                        formData.append("qty", newVal);
+
+                        fetch("<?php echo admin_url('admin-ajax.php'); ?>", {
+                            method: "POST",
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            document.querySelector(".custom_side_mini_cart-content").innerHTML = html;
+                            jQuery(document.body).trigger("wc_fragment_refresh");
+                        });
+                    }
+                });
+            });
+        </script>
+        <?php
+    }
+    return ob_get_clean();
+}
+
+// 2. Render Cart Contents Function
+function custom_side_mini_cart_render_contents() {
+    if ( WC()->cart->is_empty() ) {
+        echo '<p>Your cart is empty.</p>';
+        return;
+    }
+    ?>
+    <ul class="custom_side_mini_cart-items-list">
+        <?php
+        foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+            $_product = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+            if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 ) {
+                $thumbnail = $_product->get_image();
+                $product_price = WC()->cart->get_product_price( $_product );
+                ?>
+                <li class="custom_side_mini_cart-item">
+                    <?php echo $thumbnail; ?>
+                    <div class="custom_side_mini_cart-item-details">
+                        <h4><?php echo $_product->get_name(); ?></h4>
+                        <div><?php echo $product_price; ?></div>
+                        
+                        <!-- Quantity Controller -->
+                        <div class="custom_side_mini_cart-qty-box" data-key="<?php echo esc_attr( $cart_item_key ); ?>">
+                            <button type="button" class="custom_side_mini_cart-qty-btn minus">-</button>
+                            <input type="text" class="custom_side_mini_cart-qty-input" value="<?php echo esc_attr( $cart_item['quantity'] ); ?>" readonly />
+                            <button type="button" class="custom_side_mini_cart-qty-btn plus">+</button>
+                        </div>
+                    </div>
+                </li>
+                <?php
+            }
+        }
+        ?>
+    </ul>
+    
+    <div class="custom_side_mini_cart-footer">
+        <div class="custom_side_mini_cart-total">
+            <span>Subtotal:</span>
+            <span><?php echo WC()->cart->get_cart_total(); ?></span>
+        </div>
+        <div class="custom_side_mini_cart-buttons">
+            <a href="<?php echo esc_url( wc_get_cart_url() ); ?>">View Cart</a>
+            <a href="<?php echo esc_url( wc_get_checkout_url() ); ?>" class="checkout">Checkout</a>
+        </div>
+    </div>
+    <?php
+}
+
+// 3. AJAX Handler to Update Quantity in Backend
+add_action( 'wp_ajax_custom_side_mini_cart_update_qty', 'custom_side_mini_cart_update_qty_callback' );
+add_action( 'wp_ajax_nopriv_custom_side_mini_cart_update_qty', 'custom_side_mini_cart_update_qty_callback' );
+
+function custom_side_mini_cart_update_qty_callback() {
+    if ( isset( $_POST['cart_item_key'] ) && isset( $_POST['qty'] ) ) {
+        $cart_item_key = sanitize_text_field( $_POST['cart_item_key'] );
+        $qty = intval( $_POST['qty'] );
+
+        if ( $qty === 0 ) {
+            WC()->cart->remove_cart_item( $cart_item_key );
+        } else {
+            WC()->cart->set_quantity( $cart_item_key, $qty );
+        }
+        WC()->cart->calculate_totals();
+    }
+    
+    custom_side_mini_cart_render_contents();
+    wp_die();
+}
+
+// 4. Live AJAX Fragment Count Update for Badge
+add_filter( 'woocommerce_add_to_cart_fragments', 'custom_side_mini_cart_fragment_count' );
+
+function custom_side_mini_cart_fragment_count( $fragments ) {
+    ob_start();
+    $cart_count = WC()->cart->get_cart_contents_count();
+    ?>
+    <span class="custom_side_mini_cart-count-badge"><?php echo esc_html( $cart_count ); ?></span>
+    <?php
+    $fragments['.custom_side_mini_cart-count-badge'] = ob_get_clean();
+    return $fragments;
+}
+
+// ajax checkhout end
