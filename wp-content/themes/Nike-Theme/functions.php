@@ -545,3 +545,90 @@ add_action( 'wp_ajax_load_more_posts_action', 'custom_load_more_ajax_handler' );
 add_action( 'wp_ajax_nopriv_load_more_posts_action', 'custom_load_more_ajax_handler' );
 
 // ajax coe end
+
+
+// Step 1: Add the fields to the registration form
+add_action( 'woocommerce_register_form', 'add_custom_registration_fields' );
+
+function add_custom_registration_fields() {
+    ?>
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="reg_first_name"><?php _e( 'First name', 'woocommerce' ); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="first_name" id="reg_first_name" value="<?php if ( ! empty( $_POST['first_name'] ) ) esc_attr_e( $_POST['first_name'] ); ?>" />
+    </p>
+
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="reg_last_name"><?php _e( 'Last name', 'woocommerce' ); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="last_name" id="reg_last_name" value="<?php if ( ! empty( $_POST['last_name'] ) ) esc_attr_e( $_POST['last_name'] ); ?>" />
+    </p>
+
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="reg_billing_birth_date"><?php _e( 'Date of Birth', 'woocommerce' ); ?></label>
+        <input type="date" class="woocommerce-Input woocommerce-Input--text input-text" name="customer_dob" id="reg_billing_birth_date" value="<?php if ( ! empty( $_POST['customer_dob'] ) ) esc_attr_e( $_POST['customer_dob'] ); ?>" />
+    </p>
+    <?php
+}
+
+// Step 2: Validation
+add_filter( 'woocommerce_registration_errors', 'validate_custom_registration_fields', 10, 3 );
+
+function validate_custom_registration_fields( $errors, $username, $email ) {
+    if ( empty( $_POST['first_name'] ) ) {
+        $errors->add( 'error', __( '<strong>Error</strong>: First name is required!', 'woocommerce' ) );
+    }
+    if ( empty( $_POST['last_name'] ) ) {
+        $errors->add( 'error', __( '<strong>Error</strong>: Last name is required!', 'woocommerce' ) );
+    }
+    return $errors;
+}
+
+// Step 3: Modify Username before registration and save meta data
+add_filter( 'woocommerce_new_customer_data', 'combine_first_last_name_as_username', 10, 1 );
+
+function combine_first_last_name_as_username( $new_customer_data ) {
+    if ( ! empty( $_POST['first_name'] ) && ! empty( $_POST['last_name'] ) ) {
+        $first_name = sanitize_text_field( $_POST['first_name'] );
+        $last_name  = sanitize_text_field( $_POST['last_name'] );
+        
+        // Combine first and last name
+        $combined_name = $first_name . ' ' . $last_name;
+        
+        // Generate a clean slug/username
+        $base_username = sanitize_user( strtolower( str_replace( ' ', '-', $combined_name ) ), true );
+        
+        // Make sure the username is unique
+        $username = $base_username;
+        $counter = 1;
+        while ( username_exists( $username ) ) {
+            $username = $base_username . '-' . $counter;
+            $counter++;
+        }
+        
+        $new_customer_data['user_login'] = $username;
+        $new_customer_data['display_name'] = $combined_name;
+        $new_customer_data['first_name'] = $first_name;
+        $new_customer_data['last_name'] = $last_name;
+    }
+    return $new_customer_data;
+}
+
+// Step 4: Database save for custom meta fields & billing fields
+add_action( 'woocommerce_created_customer', 'save_custom_registration_fields' );
+
+function save_custom_registration_fields( $customer_id ) {
+    if ( isset( $_POST['first_name'] ) ) {
+        $first_name = sanitize_text_field( $_POST['first_name'] );
+        update_user_meta( $customer_id, 'first_name', $first_name );
+        // Yeh line checkout ke liye billing first name auto-fill karegi
+        update_user_meta( $customer_id, 'billing_first_name', $first_name );
+    }
+    if ( isset( $_POST['last_name'] ) ) {
+        $last_name = sanitize_text_field( $_POST['last_name'] );
+        update_user_meta( $customer_id, 'last_name', $last_name );
+        // Yeh line checkout ke liye billing last name auto-fill karegi
+        update_user_meta( $customer_id, 'billing_last_name', $last_name );
+    }
+    if ( isset( $_POST['customer_dob'] ) ) {
+        update_user_meta( $customer_id, 'customer_dob', sanitize_text_field( $_POST['customer_dob'] ) );
+    }
+}
