@@ -1,0 +1,42 @@
+# -------------------------------------------------------------------------
+# WordPress Core & Root Isolation
+# -------------------------------------------------------------------------
+# Ignore entire core WordPress sub-folder
+/wp/
+
+# Ignore root system configuration
+wp-config.php
+.htaccess
+
+# -------------------------------------------------------------------------
+# WordPress Content Directory
+# -------------------------------------------------------------------------
+# Ignore uploads, cache, and system files
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/cache/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+
+# Ignore third-party plugins and themes
+wp-content/plugins/*
+wp-content/themes/*
+
+# EXCEPTION: Track only your custom theme
+!wp-content/themes/Nike-Theme/
+
+# -------------------------------------------------------------------------
+# Environment & IDE Files
+# -------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+*.log
+*.sql
+.DS_Store
+Thumbs.db
